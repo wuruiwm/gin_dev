@@ -5,12 +5,8 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
-func init(){
+func GinInit(){
 	r := gin.Default()
-	r.GET("/", func(c *gin.Context) {
-		c.JSON(200, gin.H{
-			"message": "pong",
-		})
-	})
+	r = router(r)
 	_ = r.Run("0.0.0.0:"+config.GetString("server_port"))
 }
