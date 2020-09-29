@@ -52,5 +52,7 @@ func redisInit(){
 }
 
 func getRedisConnString()string{
-	return config.GetString("db.redis.host") + ":" + config.GetString("db.redis.port")
+	host := config.GetString("db.redis.host")
+	port := config.GetString("db.redis.port")
+	return fmt.Sprintf("%s:%s",host,port)
 }
