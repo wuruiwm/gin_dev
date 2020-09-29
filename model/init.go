@@ -27,7 +27,13 @@ func mysqlInit(){
 }
 
 func getMysqlConnString()string{
-	return config.GetString("db.mysql.user")+":"+config.GetString("db.mysql.passwd")+"@tcp("+config.GetString("db.mysql.host")+":"+config.GetString("db.mysql.port")+")/"+config.GetString("db.mysql.name")+"?charset="+config.GetString("db.mysql.charset")+"&parseTime=True&loc=Local"
+	username := config.GetString("db.mysql.username")
+	password := config.GetString("db.mysql.password")
+	host := config.GetString("db.mysql.host")
+	port := config.GetString("db.mysql.port")
+	dbname := config.GetString("db.mysql.dbname")
+	charset := config.GetString("db.mysql.charset")
+	return fmt.Sprintf("%s:%s@tcp(%s:%s)/%s?charset=%s&parseTime=True&loc=Local",username,password,host,port,dbname,charset)
 }
 
 func redisInit(){
