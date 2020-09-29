@@ -3,7 +3,7 @@ package model
 import (
 	"fmt"
 	"gin_dev/config"
-	"github.com/garyburd/redigo/redis"
+	"github.com/gomodule/redigo/redis"
 	"gorm.io/driver/mysql"
 	"gorm.io/gorm"
 	"os"
