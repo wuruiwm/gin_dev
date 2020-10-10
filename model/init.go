@@ -12,11 +12,13 @@ import (
 var Db *gorm.DB
 var Redis *redis.Pool
 
+//初始化操作
 func init(){
 	mysqlInit()
 	redisInit()
 }
 
+//初始化mysql连接池
 func mysqlInit(){
 	conn, err := gorm.Open(mysql.Open(getMysqlConnString()), &gorm.Config{})
 	if err != nil{
@@ -26,6 +28,7 @@ func mysqlInit(){
 	Db = conn
 }
 
+//获取mysql连接字符串
 func getMysqlConnString()string{
 	username := config.GetString("db.mysql.username")
 	password := config.GetString("db.mysql.password")
@@ -36,6 +39,7 @@ func getMysqlConnString()string{
 	return fmt.Sprintf("%s:%s@tcp(%s:%s)/%s?charset=%s&parseTime=True&loc=Local",username,password,host,port,dbname,charset)
 }
 
+//初始化redis连接池
 func redisInit(){
 	Redis = &redis.Pool{
 		MaxIdle:   4,
@@ -51,6 +55,7 @@ func redisInit(){
 	}
 }
 
+//获取redis连接字符串
 func getRedisConnString()string{
 	host := config.GetString("db.redis.host")
 	port := config.GetString("db.redis.port")

@@ -6,6 +6,7 @@ import (
 	"os"
 )
 
+//初始化配置文件
 func init(){
 	viper.SetConfigName("config")
 	viper.AddConfigPath("./config/")
@@ -17,6 +18,7 @@ func init(){
 	}
 }
 
+//获取配置
 func GetString(key string)string{
 	return viper.GetString(key)
 }

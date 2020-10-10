@@ -2,9 +2,9 @@
   "db": {
     "mysql": {
       "host": "127.0.0.1",
-      "user": "root",
-      "passwd": "123456",
-      "name": "dbname",
+      "username": "root",
+      "password": "123456",
+      "dbname": "dbname",
       "port": "3306",
       "charset": "utf8mb4"
     },

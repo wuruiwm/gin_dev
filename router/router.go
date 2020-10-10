@@ -6,12 +6,13 @@ import (
 )
 
 func router(r *gin.Engine)*gin.Engine{
-	r.GET("/", func(c *gin.Context) {
-		c.JSON(200, gin.H{
-			"code":0,
-			"msg":"hello world",
-		})
-	})
-	r.GET("/article/list",admin.Article{}.List)
+	//路由组
+	article := r.Group("/article")
+	{
+		article.GET("/list",admin.Article{}.List)
+		article.GET("/edit",admin.Article{}.Edit)
+		article.GET("/create",admin.Article{}.Create)
+		article.GET("/delete",admin.Article{}.Delete)
+	}
 	return r
 }
