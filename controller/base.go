@@ -2,30 +2,33 @@ package controller
 
 import "github.com/gin-gonic/gin"
 
-func success(c *gin.Context,msg string,data interface{},othor map[string]interface{}){
+const SuccessCode int = 0 //成功 状态码
+const ErrorCode int = 1 //通用错误 状态码
+
+func Success(c *gin.Context,msg string,data interface{},other map[string]interface{}){
 	response := gin.H{
-		"code":0,
+		"code":SuccessCode,
 		"msg":msg,
 	}
 	if data != nil{
 		response["data"] = data
 	}
-	if othor != nil{
-		for k,v := range othor{
+	if other != nil{
+		for k,v := range other {
 			response[k] = v
 		}
 	}
-	json(c,response)
+	JSON(c,response)
 }
 
-func error(c *gin.Context,msg string){
+func Error(c *gin.Context,msg string){
 	response := gin.H{
-		"code":1,
-		"msg":msg,
+		"code": ErrorCode,
+		"msg":  msg,
 	}
-	json(c,response)
+	JSON(c,response)
 }
 
-func json(c *gin.Context,response interface{}){
+func JSON(c *gin.Context,response interface{}){
 	c.JSON(200,response)
 }
