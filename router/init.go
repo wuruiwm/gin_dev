@@ -5,6 +5,7 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
+//初始化gin的http服务
 func HttpInit(){
 	r := gin.New()
 	//初始化gin自身的两个全局中间件
