@@ -6,9 +6,9 @@ import (
 )
 
 type Article struct {
-
+	*controller.Response
 }
 
 func (article Article)List(c *gin.Context){
-	controller.Success(c,"获取成功",nil,nil)
+	article.Success(c,"获取成功",nil)
 }
