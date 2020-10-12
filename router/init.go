@@ -1,17 +1,28 @@
 package router
 
 import (
+	"fmt"
 	"gin_dev/config"
 	"github.com/gin-gonic/gin"
 )
 
 //初始化gin的http服务
 func HttpInit(){
-	r := gin.New()
-	//初始化gin自身的两个全局中间件
-	r.Use(gin.Logger(),gin.Recovery())
+	//是否开启debug
+	if config.GetBool("debug") {
+		gin.SetMode(gin.DebugMode)
+	}else{
+		gin.SetMode(gin.ReleaseMode)
+	}
+	//实例化gin
+	r := gin.Default()
 	//路由设置
 	r = router(r)
 	//启动服务
-	_ = r.Run("0.0.0.0:"+config.GetString("server_port"))
+	_ = r.Run(getHttpString())
+}
+
+func getHttpString()string{
+	port := config.GetString("server_port")
+	return fmt.Sprintf("0.0.0.0:%s",port)
 }

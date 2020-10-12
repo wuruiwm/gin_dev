@@ -18,7 +18,14 @@ func init(){
 	}
 }
 
-//获取配置
 func GetString(key string)string{
 	return viper.GetString(key)
+}
+
+func GetBool(key string)bool{
+	return viper.GetBool(key)
+}
+
+func GetInt(key string)int{
+	return viper.GetInt(key)
 }
