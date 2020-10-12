@@ -1,8 +1,8 @@
 package main
 
 import (
+	_ "gin_dev/app/model"
 	_ "gin_dev/config"
-	_ "gin_dev/model"
 	"gin_dev/router"
 )
 
