@@ -2,6 +2,7 @@ package controller
 
 import (
 	"github.com/gin-gonic/gin"
+	"net/http"
 )
 
 const SuccessCode int = 0 //成功 状态码
@@ -35,5 +36,5 @@ func (r *Response)Error(c *gin.Context,msg string){
 
 //通用json
 func (r *Response)JSON(c *gin.Context){
-	c.JSON(200,r)
+	c.JSON(http.StatusOK,r)
 }

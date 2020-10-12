@@ -5,8 +5,8 @@ import (
 	"net/http"
 )
 
-func adminAuth() gin.HandlerFunc {
-	return func(c *gin.Context) {
+func adminAuth()gin.HandlerFunc{
+	return func(c *gin.Context){
 		//前置操作
 		if c.Query("a") == "" {
 			c.Abort() // 终止调用链条
