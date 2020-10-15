@@ -8,3 +8,8 @@ type Article struct {
 	CreateTime int    `gorm:"column:create_time;not null;default:'0';comment:'创建时间';type:int(11)" json:"create_time"`
 	UpdateTime int    `gorm:"column:update_time;not null;default:'0';comment:'修改时间';type:int(11)" json:"update_time"`
 }
+
+
+func (*Article) TableName() string {
+	return `article`
+}
