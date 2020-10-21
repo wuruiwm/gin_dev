@@ -8,7 +8,7 @@ import (
 
 func GetArticleList(c *gin.Context){
 	var article model.Article
-	model.Db.Raw("SELECT * FROM article").Scan(&article)
+	model.Db.First(&article)
 	response.Success(c,"获取成功",article)
 	return
 }

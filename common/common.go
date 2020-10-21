@@ -6,3 +6,8 @@ import "gin_dev/config"
 func DomainName()string{
 	return config.GetString("domain_name")
 }
+
+//是否开启debug
+func IsDebug()bool{
+	return config.GetBool("debug")
+}

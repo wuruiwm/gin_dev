@@ -2,6 +2,7 @@ package router
 
 import (
 	"fmt"
+	"gin_dev/common"
 	"gin_dev/config"
 	"github.com/gin-gonic/gin"
 )
@@ -9,7 +10,7 @@ import (
 //初始化gin的http服务
 func HttpInit(){
 	//是否开启debug
-	if config.GetBool("debug") {
+	if common.IsDebug() {
 		gin.SetMode(gin.DebugMode)
 	}else{
 		gin.SetMode(gin.ReleaseMode)

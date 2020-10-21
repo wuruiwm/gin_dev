@@ -2,10 +2,12 @@ package model
 
 import (
 	"fmt"
+	"gin_dev/common"
 	"gin_dev/config"
 	"github.com/gomodule/redigo/redis"
 	"gorm.io/driver/mysql"
 	"gorm.io/gorm"
+	"gorm.io/gorm/logger"
 	"os"
 )
 
@@ -20,7 +22,17 @@ func init(){
 
 //初始化mysql连接池
 func mysqlInit(){
-	conn, err := gorm.Open(mysql.Open(getMysqlConnString()), &gorm.Config{})
+	var gormConfig *gorm.Config
+	if common.IsDebug(){
+		gormConfig = &gorm.Config{
+			Logger: logger.Default.LogMode(logger.Info),//打印所有执行sql
+		}
+	}else{
+		gormConfig = &gorm.Config{
+			Logger: logger.Default.LogMode(logger.Error),//只打印错误sql
+		}
+	}
+	conn, err := gorm.Open(mysql.Open(getMysqlConnString()),gormConfig)
 	if err != nil{
 		fmt.Println("mysql连接错误:",err)
 		os.Exit(1)
