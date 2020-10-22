@@ -11,7 +11,7 @@ import (
 	"os"
 )
 
-var Db *gorm.DB
+var db *gorm.DB
 var Redis *redis.Pool
 
 //初始化操作
@@ -37,7 +37,7 @@ func mysqlInit(){
 		fmt.Println("mysql连接错误:",err)
 		os.Exit(1)
 	}
-	Db = conn
+	db = conn
 }
 
 //获取mysql连接字符串

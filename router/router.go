@@ -14,7 +14,8 @@ func router(r *gin.Engine)*gin.Engine{
 	{
 		article := adminGroup.Group("/article")
 		{
-			article.GET("/list", api.GetArticleList)
+			article.GET("/list", api.ArticleList)
+			article.POST("/create", api.ArticleCreate)
 		}
 	}
 	return r
