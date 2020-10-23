@@ -1,6 +1,8 @@
 package model
 
-import "time"
+import (
+	"time"
+)
 
 type Article struct {
 	ID         uint   `gorm:"column:id;not null;primary_key;AUTO_INCREMENT;type:int(11)" json:"id"`
@@ -29,8 +31,21 @@ func ArticleCreate(title string,content string)error{
 	article := Article{
 		Title: title,
 		Content: content,
-		CreateTime: time.Now().Second(),
-		UpdateTime: time.Now().Second(),
+		CreateTime: int(time.Now().Unix()),
+		UpdateTime: int(time.Now().Unix()),
 	}
 	return db.Create(&article).Error
+}
+
+func ArticleUpdate(id int,title string,content string)error{
+	article := Article{
+		Title: title,
+		Content: content,
+		UpdateTime: int(time.Now().Unix()),
+	}
+	return db.Model(&Article{}).Where("id",id).Updates(&article).Error
+}
+
+func ArticleDelete(id int)error{
+	return db.Where("id",id).Delete(Article{}).Error
 }

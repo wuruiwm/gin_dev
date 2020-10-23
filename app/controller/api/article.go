@@ -44,15 +44,68 @@ func ArticleCreate(c *gin.Context){
 	title := c.PostForm("title")
 	content := c.PostForm("content")
 
+	//参数校验
 	if title == ""{
 		panic("请输入标题")
 	}
 	if content == ""{
 		panic("请输入内容")
 	}
+
 	err := model.ArticleCreate(title,content)
 	if err != nil{
-		panic(err)
+		panic("创建失败")
 	}
 	response.Success(c,"创建成功",nil)
+}
+
+func ArticleUpdate(c *gin.Context){
+	defer func() {
+		if err := recover();err != nil{
+			if msg,ok := err.(string);ok{
+				response.Error(c,msg)
+			}else{
+				response.Error(c,"创建失败")
+			}
+		}
+	}()
+	//获取参数
+	id := com.StrTo(c.PostForm("id")).MustInt()
+	title := c.PostForm("title")
+	content := c.PostForm("content")
+
+	//参数校验
+	if id == 0{
+		panic("id不能为空")
+	}
+	if title == ""{
+		panic("请输入标题")
+	}
+	if content == ""{
+		panic("请输入内容")
+	}
+
+	err := model.ArticleUpdate(id,title,content)
+	if err != nil{
+		panic("修改失败")
+	}
+	response.Success(c,"修改成功",nil)
+}
+
+func ArticleDelete(c *gin.Context){
+	//获取参数
+	id := com.StrTo(c.PostForm("id")).MustInt()
+
+	//参数校验
+	if id == 0{
+		response.Error(c,"id不能为空")
+		return
+	}
+
+	err := model.ArticleDelete(id)
+	if err != nil {
+		response.Error(c,"删除失败")
+		return
+	}
+	response.Success(c,"删除成功",nil)
 }

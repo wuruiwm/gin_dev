@@ -16,6 +16,8 @@ func router(r *gin.Engine)*gin.Engine{
 		{
 			article.GET("/list", api.ArticleList)
 			article.POST("/create", api.ArticleCreate)
+			article.POST("/update", api.ArticleUpdate)
+			article.POST("/delete", api.ArticleDelete)
 		}
 	}
 	return r
