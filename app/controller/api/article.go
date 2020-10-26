@@ -7,6 +7,7 @@ import (
 	"github.com/unknwon/com"
 )
 
+//文章列表
 func ArticleList(c *gin.Context){
 	//获取参数
 	keyword := c.Query("keyword")
@@ -17,7 +18,7 @@ func ArticleList(c *gin.Context){
 	//where条件
 	where := make(map[string]interface{})
 	if categoryId != 0 {
-		where["category_id"] = categoryId
+		where["a.category_id"] = categoryId
 	}
 
 	//查询数据
@@ -30,6 +31,7 @@ func ArticleList(c *gin.Context){
 	return
 }
 
+//文章创建
 func ArticleCreate(c *gin.Context){
 	defer func() {
 		if err := recover();err != nil{
@@ -59,6 +61,7 @@ func ArticleCreate(c *gin.Context){
 	response.Success(c,"创建成功",nil)
 }
 
+//文章修改
 func ArticleUpdate(c *gin.Context){
 	defer func() {
 		if err := recover();err != nil{
@@ -92,6 +95,7 @@ func ArticleUpdate(c *gin.Context){
 	response.Success(c,"修改成功",nil)
 }
 
+//文章删除
 func ArticleDelete(c *gin.Context){
 	//获取参数
 	id := com.StrTo(c.PostForm("id")).MustInt()

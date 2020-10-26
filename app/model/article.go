@@ -13,18 +13,31 @@ type Article struct {
 	UpdateTime int    `gorm:"column:update_time;not null;comment:'修改时间';type:int(11)" json:"update_time"`
 }
 
+type ArticleListResult struct {
+	Article
+	CategoryTitle      string `gorm:"column:title;not null;default:'';comment:'分类名称';type:char(255)" json:"category_title"`
+}
+
 func (*Article) TableName() string {
 	return `article`
 }
 
-func ArticleList(page int,limit int,where map[string]interface{},keyword string)([]*Article, error){
-	var article []*Article
+func ArticleList(page int,limit int,where map[string]interface{},keyword string)([]*ArticleListResult, error){
 	offset := (page - 1)*limit
-	err := db.Where(where).Where("title like ?","%"+keyword+"%").Offset(offset).Limit(limit).Find(&article).Error
-	if err == nil{
-		return article,nil
+	var articleListResult []*ArticleListResult
+	articleModel := db.Table("article as a").
+		Joins("LEFT JOIN article_category ac on a.category_id=ac.id").
+		Where(where)
+	if keyword != ""{
+		articleModel = articleModel.Where("a.title like ?","%"+keyword+"%")
 	}
-	return article,err
+	err := articleModel.Where("a.title like ?","%"+keyword+"%").
+		Order("a.id desc").
+		Offset(offset).
+		Limit(limit).
+		Select("a.id,a.category_id,a.title,ac.title as `category_title`,a.create_time,a.update_time").
+		Find(&articleListResult).Error
+	return articleListResult,err
 }
 
 func ArticleCreate(title string,content string)error{
@@ -43,9 +56,13 @@ func ArticleUpdate(id int,title string,content string)error{
 		Content: content,
 		UpdateTime: int(time.Now().Unix()),
 	}
-	return db.Model(&Article{}).Where("id",id).Updates(&article).Error
+	return db.Model(&Article{}).
+		Where("id",id).
+		Updates(&article).Error
 }
 
 func ArticleDelete(id int)error{
-	return db.Where("id",id).Delete(Article{}).Error
+	return db.Where("id",id).
+		Delete(&Article{}).
+		Error
 }

@@ -14,10 +14,11 @@ func router(r *gin.Engine)*gin.Engine{
 	{
 		article := adminGroup.Group("/article")
 		{
-			article.GET("/list", api.ArticleList)
-			article.POST("/create", api.ArticleCreate)
-			article.POST("/update", api.ArticleUpdate)
-			article.POST("/delete", api.ArticleDelete)
+			article.GET("/", api.ArticleList)
+			article.GET("/", api.ArticleList)
+			article.POST("/", api.ArticleCreate)
+			article.PUT("/", api.ArticleUpdate)
+			article.DELETE("/", api.ArticleDelete)
 		}
 	}
 	return r
