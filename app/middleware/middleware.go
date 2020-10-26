@@ -4,7 +4,7 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
-func UserAuth()gin.HandlerFunc{
+func AdminAuth()gin.HandlerFunc{
 	return func(c *gin.Context){
 		//前置操作
 		//if(true){

@@ -1,6 +1,7 @@
 package model
 
 import (
+	"errors"
 	"time"
 )
 
@@ -15,7 +16,7 @@ type Article struct {
 
 type ArticleListResult struct {
 	Article
-	CategoryTitle      string `gorm:"column:title;not null;default:'';comment:'分类名称';type:char(255)" json:"category_title"`
+	CategoryTitle      string `gorm:"column:category_title;not null;default:'';comment:'分类名称';type:char(255)" json:"category_title"`
 }
 
 func (*Article) TableName() string {
@@ -51,6 +52,9 @@ func ArticleCreate(title string,content string)error{
 }
 
 func ArticleUpdate(id int,title string,content string)error{
+	if _,err := ArticleDetail(id);err != nil{
+		return err
+	}
 	article := Article{
 		Title: title,
 		Content: content,
@@ -62,7 +66,31 @@ func ArticleUpdate(id int,title string,content string)error{
 }
 
 func ArticleDelete(id int)error{
+	if _,err := ArticleDetail(id);err != nil{
+		return err
+	}
 	return db.Where("id",id).
 		Delete(&Article{}).
 		Error
+}
+
+func ArticleDetail(id int)(*Article,error){
+	var (
+		article Article
+		err error
+	)
+	err = db.Take(&article,id).Error
+	if article.ID == 0{
+		err = errors.New("数据不存在")
+	}
+	return &article,err
+}
+
+func ArticleCategoryAll()([]*ArticleCategory,error){
+	var (
+		articleCategory []*ArticleCategory
+		err error
+	)
+	err = db.Select("id,title").Find(&articleCategory).Error
+	return articleCategory,err
 }

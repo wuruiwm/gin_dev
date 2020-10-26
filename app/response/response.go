@@ -44,3 +44,14 @@ func Return(c *gin.Context,code int,msg string,data interface{}){
 func JSON(c *gin.Context,r *Response){
 	c.JSON(http.StatusOK,r)
 }
+
+//控制器内捕获错误 并以通用失败返回
+func RecoverError(c *gin.Context,defaultMsg string){
+	if err := recover();err != nil{
+		if msg,ok := err.(string);ok{
+			Error(c,msg)
+		}else{
+			Error(c,defaultMsg)
+		}
+	}
+}
