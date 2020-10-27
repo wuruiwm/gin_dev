@@ -9,6 +9,7 @@ import (
 	"gorm.io/gorm"
 	"gorm.io/gorm/logger"
 	"os"
+	"time"
 )
 
 var db *gorm.DB
@@ -38,6 +39,7 @@ func mysqlInit(){
 		os.Exit(1)
 	}
 	db = conn
+	setMysqlSetting()
 }
 
 //获取mysql连接字符串
@@ -55,12 +57,11 @@ func getMysqlConnString()string{
 func redisInit(){
 	Redis = &redis.Pool{
 		MaxIdle:   4,
-		MaxActive: 16,
+		MaxActive: 8,
 		Dial: func() (redis.Conn, error) {
 			c, err := redis.Dial("tcp", getRedisConnString())
 			if err != nil {
 				fmt.Println("redis连接错误:",err)
-				os.Exit(1)
 			}
 			return c, err
 		},
@@ -72,4 +73,19 @@ func getRedisConnString()string{
 	host := config.GetString("db.redis.host")
 	port := config.GetString("db.redis.port")
 	return fmt.Sprintf("%s:%s",host,port)
+}
+
+//设置mysql连接池参数
+func setMysqlSetting(){
+	sqlDB,err := db.DB()
+	if err != nil{
+		fmt.Println("mysql设置连接池参数错误:",err)
+		os.Exit(1)
+	}
+	//用于设置连接池中空闲连接的最大数量
+	sqlDB.SetMaxIdleConns(4)
+	//设置打开数据库连接的最大数量
+	sqlDB.SetMaxOpenConns(8)
+	//设置了连接可复用的最大时间
+	sqlDB.SetConnMaxLifetime(time.Hour)
 }

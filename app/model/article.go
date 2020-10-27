@@ -1,7 +1,10 @@
 package model
 
 import (
+	"encoding/json"
 	"errors"
+	"fmt"
+	"github.com/gomodule/redigo/redis"
 	"time"
 )
 
@@ -91,6 +94,23 @@ func ArticleCategoryAll()([]*ArticleCategory,error){
 		articleCategory []*ArticleCategory
 		err error
 	)
+	cacheKey := "cache:article_category_all"
+	conn := Redis.Get()
+	defer conn.Close()
+	r,err := redis.String(conn.Do("get", cacheKey))
+	if err == nil && r != ""{
+		fmt.Println("有缓存")
+		err := json.Unmarshal([]byte(r),&articleCategory)
+		if err != nil{
+			fmt.Println("json转结构体错误")
+		}
+		return articleCategory,nil
+	}
 	err = db.Select("id,title").Find(&articleCategory).Error
+	buf,err := json.Marshal(articleCategory)
+	if err == nil{
+		_,_ = conn.Do("set", cacheKey,string(buf))
+		fmt.Println("存入缓存")
+	}
 	return articleCategory,err
 }
