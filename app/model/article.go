@@ -2,8 +2,8 @@ package model
 
 import (
 	"encoding/json"
-	"errors"
 	"fmt"
+	"gin_dev/common"
 	"github.com/gomodule/redigo/redis"
 	"time"
 )
@@ -48,8 +48,8 @@ func ArticleCreate(title string,content string)error{
 	article := Article{
 		Title: title,
 		Content: content,
-		CreateTime: int(time.Now().Unix()),
-		UpdateTime: int(time.Now().Unix()),
+		CreateTime: common.GetUnixTime(),
+		UpdateTime: common.GetUnixTime(),
 	}
 	return db.Create(&article).Error
 }
@@ -83,9 +83,6 @@ func ArticleDetail(id int)(*Article,error){
 		err error
 	)
 	err = db.Take(&article,id).Error
-	if article.ID == 0{
-		err = errors.New("数据不存在")
-	}
 	return &article,err
 }
 
