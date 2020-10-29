@@ -41,6 +41,9 @@ func AdminAuth()gin.HandlerFunc{
 			responseCode = response.OtherLoginCode
 			panic("您的账号在其他地方登陆")
 		}
+		//将id 用户名存起来 以供上下文使用
+		c.Set("user_id",int(user.ID))
+		c.Set("username",user.Username)
 
 		c.Next()
 	}
