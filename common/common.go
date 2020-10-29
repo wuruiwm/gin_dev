@@ -44,24 +44,5 @@ func GetRandString(num int)string{
 
 //获取时间戳(秒)
 func GetUnixTime()int{
-	return int(time.Now().Unix());
+	return int(time.Now().Unix())
 }
-
-////设置缓存
-//func SetCache(key string,data string)error{
-//	conn := model.Redis.Get()
-//	defer conn.Close()
-//	_,err := conn.Do("set",key,data)
-//	return err
-//}
-//
-////获取缓存
-//func GetCache(key string)string{
-//	conn := model.Redis.Get()
-//	defer conn.Close()
-//	r,err := redis.String(conn.Do("get", key))
-//	if err != nil{
-//		return ""
-//	}
-//	return r
-//}

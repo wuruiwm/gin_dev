@@ -11,6 +11,9 @@ const (
 
 	NotLoginCode = 40001 //未登录
 	LoginExpiredCode = 40002 //登陆已过期
+	PasswordChangeCode = 40003 //密码被修改
+	NotUserCode = 40004 //用户不存在
+	OtherLoginCode = 40005 //在其他地方登陆
 )
 
 //http response struct

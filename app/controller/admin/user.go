@@ -21,7 +21,9 @@ func Login(c *gin.Context){
 	}
 
 	//校验用户名密码是否正确 并登陆
-	if err := model.AdminLogin(username,password);err != nil{
+	loginResult,err := model.AdminLogin(username,password)
+	if err != nil{
 		panic(err.Error())
 	}
+	response.Success(c,"登陆成功",loginResult)
 }

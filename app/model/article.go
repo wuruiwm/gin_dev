@@ -2,9 +2,7 @@ package model
 
 import (
 	"encoding/json"
-	"fmt"
 	"gin_dev/common"
-	"github.com/gomodule/redigo/redis"
 	"time"
 )
 
@@ -91,23 +89,20 @@ func ArticleCategoryAll()([]*ArticleCategory,error){
 		articleCategory []*ArticleCategory
 		err error
 	)
+	//判断是否有缓存 有缓存则直接返回
 	cacheKey := "cache:article_category_all"
-	conn := Redis.Get()
-	defer conn.Close()
-	r,err := redis.String(conn.Do("get", cacheKey))
-	if err == nil && r != ""{
-		fmt.Println("有缓存")
-		err := json.Unmarshal([]byte(r),&articleCategory)
-		if err != nil{
-			fmt.Println("json转结构体错误")
+	articleCategoryJson := common.GetCache(cacheKey)
+	if articleCategoryJson != ""{
+		if err := json.Unmarshal([]byte(articleCategoryJson),&articleCategory);err == nil{
+			return articleCategory,nil
 		}
-		return articleCategory,nil
 	}
-	err = db.Select("id,title").Find(&articleCategory).Error
-	buf,err := json.Marshal(articleCategory)
-	if err == nil{
-		_,_ = conn.Do("set", cacheKey,string(buf))
-		fmt.Println("存入缓存")
+	//无缓存 查询结果缓存后返回
+	if err = db.Select("id,title").Find(&articleCategory).Error;err != nil{
+		return articleCategory,err
 	}
-	return articleCategory,err
+	if buf,err := json.Marshal(articleCategory);err == nil{
+		_ = common.SetCache(cacheKey,string(buf),7200)
+	}
+	return articleCategory,nil
 }

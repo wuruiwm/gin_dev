@@ -1,8 +1,10 @@
 package model
 
 import (
+	"encoding/json"
 	"errors"
 	"fmt"
+	"gin_dev/app/response"
 	"gin_dev/common"
 )
 
@@ -16,21 +18,25 @@ type User struct {
 	LastLoginTime int `gorm:"column:last_login_time;not null;default:0;comment:'最后登陆时间';type:int(11)" json:"last_login_time"`
 }
 
-func (*User) TableName() string {
+func (*User)TableName()string{
 	return `user`
 }
 
-func AdminLogin(username string,password string)error{
+type LoginResult struct {
+	Token string `json:"token"`
+	Expire int   `json:"expire"`
+}
+
+func AdminLogin(username string,password string)(*LoginResult,error){
 	var (
 		user *User
 		err error
+		loginResult LoginResult
 	)
 	if user,err = CheckUserPassword(username,password);err != nil{
-		return err
+		return &loginResult,err
 	}
-	fmt.Println(user)
-	LoginSuccess(user)
-	return nil
+	return LoginSuccess(user)
 }
 
 func CheckUserPassword(username string,password string)(*User,error){
@@ -52,8 +58,72 @@ func GetHashPassword(password string,salt string)string{
 	return common.MD5(common.MD5(password+appKey)+salt)
 }
 
-func LoginSuccess(user *User){
+func LoginSuccess(user *User)(*LoginResult,error){
+	var (
+		loginResult LoginResult
+		err error
+	)
 	//更新登陆时间
 	user.LastLoginTime = common.GetUnixTime()
-	db.Where("id",user.ID).Updates(user)
+	if err = db.Select("last_login_time").Updates(user).Error;err != nil{
+		return &loginResult,errors.New("修改最后登陆时间失败")
+	}
+	return SetToken(user)
+}
+
+func SetToken(user *User)(*LoginResult,error){
+	var (
+		loginResult LoginResult
+		cacheKey string
+		buf []byte
+		err error
+	)
+	//设置token
+	loginResult.Token = GetHashToken(user)
+	loginResult.Expire = 60*60*24*7
+	cacheKey = GetAdminTokenPrefix() + loginResult.Token
+	buf,err = json.Marshal(user)
+	if err != nil{
+		return &loginResult,errors.New("json序列化失败")
+	}
+	err = common.SetCache(cacheKey,string(buf),loginResult.Expire)
+	return &loginResult,err
+}
+
+func GetAdminTokenPrefix()string{
+	return "admin:token:"
+}
+
+func GetTokenUser(token string)(*User,int,error){
+	var (
+		cacheKey string
+		userJson string
+		user User
+		err error
+	)
+	if token == ""{
+		return &user,response.NotLoginCode,errors.New("未登录")
+	}
+	cacheKey = GetAdminTokenPrefix() + token
+	userJson = common.GetCache(cacheKey)
+	if userJson == ""{
+		return &user,response.LoginExpiredCode,errors.New("登陆已过期")
+	}
+	err = json.Unmarshal([]byte(userJson),&user)
+	return &user,response.ErrorCode,err
+}
+
+func GetUser(userId uint)(*User,error){
+	var (
+		user User
+		err error
+	)
+	if err = db.Where("id",userId).Take(&user).Error;err != nil{
+		err = errors.New("用户不存在")
+	}
+	return &user,err
+}
+
+func GetHashToken(user *User)string{
+	return common.MD5(fmt.Sprintf("%s%s%s%d",user.Username,user.Password,user.Salt,user.LastLoginTime))
 }

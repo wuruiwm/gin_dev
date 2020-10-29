@@ -4,7 +4,6 @@ import (
 	"fmt"
 	"gin_dev/common"
 	"gin_dev/config"
-	"github.com/gomodule/redigo/redis"
 	"gorm.io/driver/mysql"
 	"gorm.io/gorm"
 	"gorm.io/gorm/logger"
@@ -13,12 +12,10 @@ import (
 )
 
 var db *gorm.DB
-var Redis *redis.Pool
 
 //初始化操作
 func init(){
 	mysqlInit()
-	redisInit()
 }
 
 //初始化mysql连接池
@@ -53,28 +50,6 @@ func getMysqlConnString()string{
 	return fmt.Sprintf("%s:%s@tcp(%s:%s)/%s?charset=%s&parseTime=True&loc=Local",username,password,host,port,dbname,charset)
 }
 
-//初始化redis连接池
-func redisInit(){
-	Redis = &redis.Pool{
-		MaxIdle:   4,
-		MaxActive: 8,
-		Dial: func() (redis.Conn, error) {
-			c, err := redis.Dial("tcp", getRedisConnString())
-			if err != nil {
-				fmt.Println("redis连接错误:",err)
-			}
-			return c, err
-		},
-	}
-}
-
-//获取redis连接字符串
-func getRedisConnString()string{
-	host := config.GetString("db.redis.host")
-	port := config.GetString("db.redis.port")
-	return fmt.Sprintf("%s:%s",host,port)
-}
-
 //设置mysql连接池参数
 func setMysqlSetting(){
 	sqlDB,err := db.DB()
@@ -88,8 +63,4 @@ func setMysqlSetting(){
 	sqlDB.SetMaxOpenConns(8)
 	//设置了连接可复用的最大时间
 	sqlDB.SetConnMaxLifetime(time.Hour)
-}
-
-func GetRedisConn()redis.Conn{
-	return Redis.Get()
 }
