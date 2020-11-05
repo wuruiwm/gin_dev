@@ -38,7 +38,7 @@ func GetRedisConn()redis.Conn{
 //设置缓存
 func SetCache(key string,data string,expire int)error{
 	var err error
-	conn := Redis.Get()
+	conn := GetRedisConn()
 	defer conn.Close()
 	if expire == 0{
 		_,err = conn.Do("set",key,data)
@@ -50,7 +50,7 @@ func SetCache(key string,data string,expire int)error{
 
 //获取缓存
 func GetCache(key string)string{
-	conn := Redis.Get()
+	conn := GetRedisConn()
 	defer conn.Close()
 	r,err := redis.String(conn.Do("get", key))
 	if err != nil{
