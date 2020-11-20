@@ -21,14 +21,14 @@ func init(){
 //初始化mysql连接池
 func mysqlInit(){
 	var gormConfig *gorm.Config
+	var logLevel logger.LogLevel
 	if common.IsDebug(){
-		gormConfig = &gorm.Config{
-			Logger: logger.Default.LogMode(logger.Info),//打印所有执行sql
-		}
+		logLevel = logger.Info
 	}else{
-		gormConfig = &gorm.Config{
-			Logger: logger.Default.LogMode(logger.Error),//只打印错误sql
-		}
+		logLevel = logger.Error
+	}
+	gormConfig = &gorm.Config{
+		Logger: logger.Default.LogMode(logLevel),
 	}
 	conn, err := gorm.Open(mysql.Open(getMysqlConnString()),gormConfig)
 	if err != nil{
