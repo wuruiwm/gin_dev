@@ -4,7 +4,11 @@ import (
 	"crypto/md5"
 	"encoding/hex"
 	"gin_dev/config"
+	"io"
+	"io/ioutil"
 	"math/rand"
+	"net/http"
+	"os"
 	"time"
 )
 
@@ -45,4 +49,32 @@ func GetRandString(num int)string{
 //获取时间戳(秒)
 func GetUnixTime()int{
 	return int(time.Now().Unix())
+}
+
+//获取文件大小
+func GetFileSize(filePath string)(int,error){
+	content,err := ioutil.ReadFile(filePath)
+	if err != nil {
+		return 0,err
+	}
+	return len(content),nil
+}
+
+//下载文件
+func downloadFile(url string,filePath string)(err error){
+	resp,err := http.Get(url)
+	if err != nil {
+		return err
+	}
+	defer resp.Body.Close()
+	out,err := os.Create(filePath)
+	if err != nil {
+		return err
+	}
+	defer out.Close()
+	_,err = io.Copy(out, resp.Body)
+	if err != nil {
+		return err
+	}
+	return nil
 }
